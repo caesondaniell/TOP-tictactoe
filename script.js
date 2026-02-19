@@ -25,7 +25,9 @@ const game = (() => {
             board.splice(square - 1, 1, marker)
         } else console.log("That space is already taken!");
         console.log(game.board);
-        console.log(endCheck());
+        for (const outcome in endCheck()) {
+            if (endCheck()[outcome]) console.log("Game over!");
+        }
     };
 
     function endCheck() {
