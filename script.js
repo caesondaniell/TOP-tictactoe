@@ -22,36 +22,52 @@ const game = (() => {
 
     function place(square, marker) {
         if (board[square - 1] === "") {
-            board.splice(square - 1, 1, marker)
-        } else console.log("That space is already taken!");
-        console.log(board);
-        for (const outcome in endCheck()) {
-            if (endCheck()[outcome]) console.log("Game over!");
+            board.splice(square - 1, 1, marker);
+            console.log(board);
+        } else {
+            alert("That space is already taken!");
+            return;
         }
+        const result = endCheck();
+        if (result.outcome) {
+            if (result.outcome === "cat's game") {
+                console.log(`It's a ${result.outcome}!`);
+            } else {
+                console.log(`It's a ${result.outcome}; ${result.winner} wins!`)
+            }
+        }
+        
     };
 
     function endCheck() {
-        let vertVictory, horzVictory, diagVictory, catGame, h = 0;
+        let h = 0, outcome, winner;
         while (h < 7) {
             if (board[h] !== "" &&
                 board[h] === board[h + 1] &&
-                board[h] === board[h + 2]) horzVictory = true;
+                board[h] === board[h + 2]) {
+                    outcome = "horizontal victory";
+                    winner = board[h];
+                }
             h += 3;
         };
         for (let v = 0; v < 3; v++) {
             if (board[v] !== "" &&
                 board[v] === board[v + 3] &&
-                board[v] === board[v + 6]) vertVictory = true;
+                board[v] === board[v + 6]) {
+                    outcome = "vertical victory";
+                    winner = board[v];
+                }
         }
         if (
             board[4] !== "" &&
             ((board[4] === board[0] && board[4] === board[8]) ||
             (board[4] === board[2] && board[4] === board[6]))
-        ) diagVictory = true;
-        if (
-            !board.includes("") && !(vertVictory || horzVictory || diagVictory)
-        ) catGame = true;
-        return { vertVictory, horzVictory, diagVictory, catGame };
+        ) {
+            outcome = "diagonal victory";
+            winner = board[4];
+        }
+        if (!board.includes("")) outcome = "cat's game";
+        return { outcome, winner };
     }
 
     function reset() {
@@ -62,13 +78,14 @@ const game = (() => {
     return { place, reset };
 })();
 
-game.place(1, "X");
-game.place(4, "O");
-game.place(3, "X");
-game.place(2, "O");
-game.place(6, "X");
-game.place(9, "O");
-game.place(5, "X");
-game.place(7, "O");
-game.place(8, "X");
-game.reset();
+// for testing
+// game.place(1, "X");
+// game.place(2, "O");
+// game.place(5, "X");
+// game.place(8, "O");
+// game.place(9, "X");
+// game.place(9, "O");
+// game.place(5, "X");
+// game.place(7, "O");
+// game.place(8, "X");
+// game.reset();
