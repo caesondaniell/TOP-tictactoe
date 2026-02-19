@@ -24,7 +24,7 @@ const game = (() => {
         if (board[square - 1] === "") {
             board.splice(square - 1, 1, marker)
         } else console.log("That space is already taken!");
-        console.log(game.board);
+        console.log(board);
         for (const outcome in endCheck()) {
             if (endCheck()[outcome]) console.log("Game over!");
         }
@@ -56,10 +56,10 @@ const game = (() => {
 
     function reset() {
         board.forEach(square => { board.splice(board.indexOf(square), 1, "") });
-        console.log(game.board);
+        console.log(board);
     }
 
-    return { board, place, reset };
+    return { place, reset };
 })();
 
 game.place(1, "X");
