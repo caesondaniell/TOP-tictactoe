@@ -143,6 +143,31 @@ const game = (() => {
     return { board, newGame };
 })();
 
+const domController = (() => {
+    function gridBuilder() {
+        const createBtn = elementCreator("button");
+        const boardWrapper = document.querySelector(".board-wrapper");
+        game.board.grid.forEach(square => {
+            const btn = createBtn();
+            btn.classList.add("gridSquare");
+            btn.addEventListener("click", () => {
+                btn.toggleAttribute("disabled");
+            });
+            boardWrapper.appendChild(btn);
+        })
+    }
+    
+    function elementCreator(element) {
+        return () => {
+            return document.createElement(element);
+        }
+    }
+
+    return { gridBuilder };
+})();
+
+domController.gridBuilder();
+
 
 // for testing
 // board.claim(1, "X");
