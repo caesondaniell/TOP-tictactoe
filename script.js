@@ -13,7 +13,6 @@ const board = (() => {
 
     function clear() {
         grid.forEach(square => { grid.splice(grid.indexOf(square), 1, "") });
-        console.log(grid);
     }
 
     return { grid, clear };
@@ -41,6 +40,16 @@ const game = (() => {
         console.log("Game over.");
         console.log(`${player1.name}'s score: ${player1.getScore()}`);
         console.log(`${player2.name}'s score: ${player2.getScore()}`);
+        if (confirm("Play another round?")) newRound();
+    }
+
+    function newRound() {
+        board.clear();
+        if (confirm("Switch markers?")) {
+            const [player1, player2] = playerList;
+            [player1.marker, player2.marker] = [player2.marker, player1.marker];
+        }
+        play();
     }
 
     function newPlayer() {
