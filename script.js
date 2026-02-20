@@ -25,7 +25,6 @@ const game = (() => {
     function newGame() {
         const player1 = newPlayer();
         const player2 = newPlayer();
-        // let firstPlayer, secondPlayer;
         setMarker(player1);
         player2.marker = player1.marker === "X" ? "O" : "X";
         playerList.push(player1, player2);
@@ -33,7 +32,15 @@ const game = (() => {
     }
 
     function play() {
-        console.log(coinFlip());
+        const [player1, player2] = coinFlip();
+        while (!gameStatus().outcome) {
+            const currPlayer = whoseTurn(player1, player2);
+            console.log(`Next: ${currPlayer.name} (${currPlayer.marker})`);
+            claim(currPlayer);
+        }
+        console.log("Game over.");
+        console.log(`${player1.name}'s score: ${player1.getScore()}`);
+        console.log(`${player2.name}'s score: ${player2.getScore()}`);
     }
 
     function newPlayer() {
@@ -43,8 +50,6 @@ const game = (() => {
         const getScore = () => score;
         const addWin = () => { score++ };
         return { name, marker, getScore, addWin };
-        // playerList.push({ name, marker, getScore, addWin });
-        // console.log(playerList);
     }
 
     function setMarker(player) {
@@ -54,43 +59,30 @@ const game = (() => {
         }
     }
 
-    function whoseTurn() {
-        const player1 = playerList[0];
-        const player2 = playerList[1];
-        let turn, currentPlayer;
-        if (board.grid.every(item => item === "")) {
-            const starter = coinFlip();
-            turn = first === 0 ? "O" : "X";
-        } else {
-            const firstCount = board.grid.filter(space => space === "X");
-            const secondCount = board.grid.filter(space => space === "O");
-            turn = xCount.length > oCount.length ? "O" : "X";
-        }
-        playerList.forEach(player => {
-            if (player.marker === turn) currentPlayer = player;
-        })
-        return currentPlayer;
+    function whoseTurn(one, two) {
+        const oneCount = board.grid.filter(space => space === one.marker);
+        const twoCount = board.grid.filter(space => space === two.marker);
+        const currPlayer = oneCount.length === twoCount.length ? one : two;
+        return currPlayer;
     }
 
-    function claim(square) {
-        if (board.grid[square - 1] === "") {
-            board.grid.splice(square - 1, 1, whoseTurn().marker);
-            console.log(board.grid);
-        } else {
-            alert("That space is already claimed!");
-            return;
+    function claim(player) {
+        let square = prompt(`${player.name}: Claim a square (1-9)`);
+        while (!(board.grid[square - 1] === "")) {
+            square = prompt(`Sorry ${player.name}, that square is claimed.\nClaim a square (1-9)`)
         }
-        console.log(gameStatus());
+        board.grid.splice(square - 1, 1, player.marker);
+        console.log(board.grid);
     };
 
     function gameStatus() {
-        let h = 0, outcome, winner;
+        let h = 0, outcome, winMark;
         while (h < 7) {
             if (board.grid[h] !== "" &&
                 board.grid[h] === board.grid[h + 1] &&
                 board.grid[h] === board.grid[h + 2]) {
                     outcome = "horizontal victory";
-                    winner = board.grid[h];
+                    winMark = board.grid[h];
                 }
             h += 3;
         };
@@ -99,7 +91,7 @@ const game = (() => {
                 board.grid[v] === board.grid[v + 3] &&
                 board.grid[v] === board.grid[v + 6]) {
                     outcome = "vertical victory";
-                    winner = board.grid[v];
+                    winMark = board.grid[v];
                 }
         }
         if (
@@ -110,16 +102,22 @@ const game = (() => {
                 board.grid[4] === board.grid[6]))
         ) {
             outcome = "diagonal victory";
-            winner = board.grid[4];
+            winMark = board.grid[4];
         }
         if (!board.grid.includes("")) outcome = "cat's game";
         if (outcome) {
             if (outcome === "cat's game") {
                 console.log(`It's a ${outcome}!`);
             } else {
-                console.log(`It's a ${outcome}; ${winner} wins!`)
+                let victor
+                playerList.forEach(player => {
+                    if (winMark === player.marker) victor = player;
+                })
+                console.log(`It's a ${outcome}; ${victor.name} wins!`);
+                victor.addWin();
             }
-        } else console.log(`Next: ${whoseTurn().name} (${whoseTurn().marker})`);
+        }
+        return { outcome };
     }
 
     function coinFlip() {
@@ -131,7 +129,7 @@ const game = (() => {
         return [firstPlayer, secondPlayer];
     }
 
-    return { claim, newGame };
+    return { newGame };
 })();
 
 
