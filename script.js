@@ -25,15 +25,16 @@ const game = (() => {
     function newGame() {
         const player1 = newPlayer();
         const player2 = newPlayer();
+        // let firstPlayer, secondPlayer;
         setMarker(player1);
         player2.marker = player1.marker === "X" ? "O" : "X";
         playerList.push(player1, player2);
-        // play();
+        play();
     }
 
-    // function play() {
-
-    // }
+    function play() {
+        console.log(coinFlip());
+    }
 
     function newPlayer() {
         let marker, score = 0;
@@ -54,14 +55,15 @@ const game = (() => {
     }
 
     function whoseTurn() {
-        let turn;
-        let currentPlayer;
+        const player1 = playerList[0];
+        const player2 = playerList[1];
+        let turn, currentPlayer;
         if (board.grid.every(item => item === "")) {
-            const first = coinFlip();
+            const starter = coinFlip();
             turn = first === 0 ? "O" : "X";
         } else {
-            const oCount = board.grid.filter(space => space === "O");
-            const xCount = board.grid.filter(space => space === "X");
+            const firstCount = board.grid.filter(space => space === "X");
+            const secondCount = board.grid.filter(space => space === "O");
             turn = xCount.length > oCount.length ? "O" : "X";
         }
         playerList.forEach(player => {
@@ -78,18 +80,10 @@ const game = (() => {
             alert("That space is already claimed!");
             return;
         }
-        const status = statusCheck();
-        if (status.outcome) {
-            if (status.outcome === "cat's game") {
-                console.log(`It's a ${status.outcome}!`);
-            } else {
-                console.log(`It's a ${status.outcome}; ${status.winner} wins!`)
-            }
-        } else console.log(`Next up: ${whoseTurn().name} (${whoseTurn().marker})`);
-        
+        console.log(gameStatus());
     };
 
-    function statusCheck() {
+    function gameStatus() {
         let h = 0, outcome, winner;
         while (h < 7) {
             if (board.grid[h] !== "" &&
@@ -119,11 +113,22 @@ const game = (() => {
             winner = board.grid[4];
         }
         if (!board.grid.includes("")) outcome = "cat's game";
-        return { outcome, winner };
+        if (outcome) {
+            if (outcome === "cat's game") {
+                console.log(`It's a ${outcome}!`);
+            } else {
+                console.log(`It's a ${outcome}; ${winner} wins!`)
+            }
+        } else console.log(`Next: ${whoseTurn().name} (${whoseTurn().marker})`);
     }
 
     function coinFlip() {
-        return Math.floor(Math.random() * 2);
+        const flip = Math.floor(Math.random() * 2);
+        const [player1, player2] = playerList;
+        const [firstPlayer, secondPlayer] = flip === 0 ?
+                                [player1, player2] :
+                                [player2, player1];
+        return [firstPlayer, secondPlayer];
     }
 
     return { claim, newGame };
