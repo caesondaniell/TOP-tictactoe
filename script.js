@@ -1,5 +1,6 @@
-const board = (() => {
-    const grid = [
+const game = (() => {
+    const board = (() => {
+        const grid = [
         "",
         "",
         "",
@@ -9,19 +10,20 @@ const board = (() => {
         "",
         "",
         ""
-    ];
+        ];
 
-    function clear() {
-        grid.forEach(square => { grid.splice(grid.indexOf(square), 1, "") });
-    }
+        function clear() {
+            grid.forEach(square => { grid.splice(grid.indexOf(square), 1, "") });
+        }
 
-    return { grid, clear };
-})();
+        return { grid, clear };
+    })();
 
-const game = (() => {
-    const playerList = [];
+    let playerList = [];
 
     function newGame() {
+        board.clear();
+        playerList = [];
         const player1 = newPlayer();
         const player2 = newPlayer();
         setMarker(player1);
@@ -138,7 +140,7 @@ const game = (() => {
         return [firstPlayer, secondPlayer];
     }
 
-    return { newGame };
+    return { board, newGame };
 })();
 
 
