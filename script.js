@@ -149,7 +149,7 @@ const domController = (() => {
         const boardWrapper = document.querySelector(".board-wrapper");
         game.board.grid.forEach(square => {
             const btn = createBtn();
-            btn.classList.add("gridSquare");
+            btn.classList.add("grid-square");
             btn.addEventListener("click", () => {
                 btn.toggleAttribute("disabled");
             });

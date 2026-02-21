@@ -1,0 +1,39 @@
+.main {
+    display: grid;
+    place-items: center;
+}
+
+.board-wrapper {
+    display: grid;
+    grid: repeat(3, 1fr) / repeat(3, 1fr);
+    place-items: center;
+    width: min(30rem, 90vw);
+}
+
+.grid-square {
+    height: min(10rem, 30vw);
+    width: min(10rem, 30vw);
+    border: none;
+    background-color: canvas;
+}
+
+.grid-square:hover {
+    cursor: pointer;
+}
+
+.grid-square:disabled:hover {
+    cursor: not-allowed;
+}
+
+.grid-square:nth-child(3n) {
+    border-left: 5px solid black;
+}
+
+.grid-square:nth-child(3n + 1) {
+    border-right: 5px solid black;
+}
+
+.grid-square:nth-child(n + 4):nth-child(-n + 6) {
+    border-top: 5px solid black;
+    border-bottom: 5px solid black;
+}
