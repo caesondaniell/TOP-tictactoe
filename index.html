@@ -10,23 +10,31 @@
 <body>
     <div class="main">
         <h1>Tic Tac Toe</h1>
-        <div class="control-buttons">
-            <button class="game-control new">new game</button>
-            <button class="game-control play" hidden>start round</button>
-            <button class="game-control clear" hidden>clear board</button>
+        <div class="control-button">
+            <button class="game-control">new game</button>
         </div>
-        <div class="game-text">This is just some test text.</div>
-        <div class="board-wrapper"></div>
+        <div class="game-text"></div>
+        <div class="board-wrapper">
+            <button class="grid-square" data-position: "0"></button>
+            <button class="grid-square" data-position: "1"></button>
+            <button class="grid-square" data-position: "2"></button>
+            <button class="grid-square" data-position: "3"></button>
+            <button class="grid-square" data-position: "4"></button>
+            <button class="grid-square" data-position: "5"></button>
+            <button class="grid-square" data-position: "6"></button>
+            <button class="grid-square" data-position: "7"></button>
+            <button class="grid-square" data-position: "8"></button>
+        </div>
         <div class="players-wrapper">
             <div>
-                <h2>Charlie</h2>
-                <p>marker: X</p>
-                <p>score: 0</p>
+                <h2 class="p1-name"></h2>
+                <p class="p1-mark"></p>
+                <p class="p1-score"></p>
             </div>
             <div>
-                <h2>Patty</h2>
-                <p>marker: O</p>
-                <p>score: 2</p>
+                <h2 class="p2-name"></h2>
+                <p class="p2-mark"></p>
+                <p class="p2-score"></p>
             </div>
         </div>
     </div>

@@ -29,20 +29,20 @@ const game = (() => {
         setMarker(player1);
         player2.marker = player1.marker === "X" ? "O" : "X";
         playerList.push(player1, player2);
-        play();
+        domController.updatePlayers(player1, player2);
     }
 
     function play() {
+        const gameText = document.querySelector(".game-text");
         const [player1, player2] = coinFlip();
         while (!gameStatus().outcome) {
             const currPlayer = whoseTurn(player1, player2);
-            console.log(`Next: ${currPlayer.name} (${currPlayer.marker})`);
+            gameText.textContent = `Next: ${currPlayer.name} (${currPlayer.marker})`;
             claim(currPlayer);
         }
-        console.log("Game over.");
-        console.log(`${player1.name}'s score: ${player1.getScore()}`);
-        console.log(`${player2.name}'s score: ${player2.getScore()}`);
-        if (confirm("Play another round?")) newRound();
+        gameText.textContent.concat(`\nGame over.`);
+        domController.updatePlayers(playerList[0], playerList[1]);
+        if (confirm("Play another round?")) newGame();
     }
 
     function newRound() {
@@ -118,14 +118,15 @@ const game = (() => {
         }
         if (!board.grid.includes("")) outcome = "cat's game";
         if (outcome) {
+            const gameText = document.querySelector(".game-text");
             if (outcome === "cat's game") {
-                console.log(`It's a ${outcome}!`);
+                gameText.textContent = `It's a ${outcome}!`;
             } else {
                 let victor
                 playerList.forEach(player => {
                     if (winMark === player.marker) victor = player;
                 })
-                console.log(`It's a ${outcome}; ${victor.name} wins!`);
+                gameText.textContent = `It's a ${outcome}; ${victor.name} wins!`;
                 victor.addWin();
             }
         }
@@ -141,38 +142,30 @@ const game = (() => {
         return [firstPlayer, secondPlayer];
     }
 
-    return { board, newGame };
+    return { board, newGame, play };
 })();
 
 const domController = (() => {
-    function gridBuilder() {
-        const gameBoard = game.board.grid;
-        const createBtn = elementCreator("button");
-        const boardWrapper = document.querySelector(".board-wrapper");
-        for (let i = 0; i < gameBoard.length; i++) {
-            const btn = createBtn();
-            btn.classList.add("grid-square");
-            btn.setAttribute("data-position", i);
-            btn.addEventListener("click", () => {
-                game.newGame();
-            })
-            boardWrapper.appendChild(btn);
-        }
-        // game.board.grid.forEach(square => {
-        //     const btn = createBtn();
-        //     btn.classList.add("grid-square");
-        //     btn.addEventListener("click", () => {
-        //         btn.toggleAttribute("disabled");
-        //     });
-        //     boardWrapper.appendChild(btn);
-        // })
-    }
-
     function updateGrid() {
         const btns = document.querySelectorAll(".grid-square");
         for (let i = 0; i < btns.length; i++) {
             btns[i].textContent = game.board.grid[i];
         }
+    }
+
+    function updatePlayers(player1, player2) {
+        const p1Name = document.querySelector(".p1-name");
+        const p1Mark = document.querySelector(".p1-mark");
+        const p1Score = document.querySelector(".p1-score");
+        const p2Name = document.querySelector(".p2-name");
+        const p2Mark = document.querySelector(".p2-mark");
+        const p2Score = document.querySelector(".p2-score");
+        p1Name.textContent = player1.name;
+        p1Mark.textContent = `marker: ${player1.marker}`;
+        p1Score.textContent = `score: ${player1.getScore()}`;
+        p2Name.textContent = player2.name;
+        p2Mark.textContent = `marker: ${player2.marker}`;
+        p2Score.textContent = `score: ${player2.getScore()}`;
     }
     
     function elementCreator(element) {
@@ -181,10 +174,27 @@ const domController = (() => {
         }
     }
 
-    return { gridBuilder, updateGrid };
+    return { updateGrid, updatePlayers };
 })();
 
-domController.gridBuilder();
+const control = document.querySelector(".game-control");
+control.addEventListener("click", () => {
+    switch (control.textContent) {
+        case ("new game"):
+            game.newGame();
+            control.textContent = "play round";
+            break;
+        case ("play round"):
+            game.play();
+            control.textContent = "clear board";
+            break;
+        case ("clear board"):
+            game.board.clear();
+            domController.updateGrid();
+            game.play();
+            break;
+    }
+})
 
 
 // for testing
