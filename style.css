@@ -1,6 +1,25 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+div {
+    font-size: 1.2rem;
+}
+
 .main {
+    padding: 1rem;
     display: grid;
     place-items: center;
+    gap: 2rem;
+}
+
+.game-control {
+    text-transform: uppercase;
+    padding: 0.5em 1em;
 }
 
 .board-wrapper {
@@ -15,6 +34,7 @@
     width: min(10rem, 30vw);
     border: none;
     background-color: canvas;
+    font-size: 8rem;
 }
 
 .grid-square:hover {
@@ -36,4 +56,10 @@
 .grid-square:nth-child(n + 4):nth-child(-n + 6) {
     border-top: 5px solid black;
     border-bottom: 5px solid black;
+}
+
+.players-wrapper {
+    width: min(30rem, 90vw);
+    display: flex;
+    justify-content: space-around;
 }

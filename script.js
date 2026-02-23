@@ -83,6 +83,7 @@ const game = (() => {
             square = prompt(`Sorry ${player.name}, that square is claimed.\nClaim a square (1-9)`)
         }
         board.grid.splice(square - 1, 1, player.marker);
+        domController.updateGrid();
         console.log(board.grid);
     };
 
@@ -145,16 +146,33 @@ const game = (() => {
 
 const domController = (() => {
     function gridBuilder() {
+        const gameBoard = game.board.grid;
         const createBtn = elementCreator("button");
         const boardWrapper = document.querySelector(".board-wrapper");
-        game.board.grid.forEach(square => {
+        for (let i = 0; i < gameBoard.length; i++) {
             const btn = createBtn();
             btn.classList.add("grid-square");
+            btn.setAttribute("data-position", i);
             btn.addEventListener("click", () => {
-                btn.toggleAttribute("disabled");
-            });
+                game.newGame();
+            })
             boardWrapper.appendChild(btn);
-        })
+        }
+        // game.board.grid.forEach(square => {
+        //     const btn = createBtn();
+        //     btn.classList.add("grid-square");
+        //     btn.addEventListener("click", () => {
+        //         btn.toggleAttribute("disabled");
+        //     });
+        //     boardWrapper.appendChild(btn);
+        // })
+    }
+
+    function updateGrid() {
+        const btns = document.querySelectorAll(".grid-square");
+        for (let i = 0; i < btns.length; i++) {
+            btns[i].textContent = game.board.grid[i];
+        }
     }
     
     function elementCreator(element) {
@@ -163,7 +181,7 @@ const domController = (() => {
         }
     }
 
-    return { gridBuilder };
+    return { gridBuilder, updateGrid };
 })();
 
 domController.gridBuilder();
