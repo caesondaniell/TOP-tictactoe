@@ -67,7 +67,7 @@ const game = (() => {
         players.list[1].turn = 0;
         const flip = Math.floor(Math.random() * 2);
         players.list[0].turn = flip === 0 ? 1 : 2;
-        players.list[1].turn = players.list[0].turn = 1 ? 2: 1;
+        players.list[1].turn = players.list[0].turn === 1 ? 2 : 1;
     }
     //INTERNAL (claim, gameStatus): RETURN current player
     function whoseTurn() {
@@ -161,6 +161,7 @@ const domControl = (() => {
                     break;
                 case ("reset"):
                     game.startRound();
+                    updatePlayers();
                     gameText.textContent = game.checkStatus().gameText;
                     break;
             }
@@ -182,14 +183,13 @@ const domControl = (() => {
         const p2Name = document.querySelector(".p2-name");
         const p2Mark = document.querySelector(".p2-mark");
         const p2Score = document.querySelector(".p2-score");
-        console.log(player1);
-        console.log(player2);
-        // p1Name.textContent = player1.name;
-        // p1Mark.textContent = `marker: ${player1.marker}`;
-        // p1Score.textContent = `score: ${player1.getScore()}`;
-        // p2Name.textContent = player2.name;
-        // p2Mark.textContent = `marker: ${player2.marker}`;
-        // p2Score.textContent = `score: ${player2.getScore()}`;
+        p1Name.textContent = player1.name;
+        p1Mark.textContent = `marker: ${player1.marker}`;
+        p1Score.textContent = `score: ${player1.getScore()}`;
+        p2Name.textContent = player2.name;
+        p2Mark.textContent = `marker: ${player2.marker}`;
+        p2Score.textContent = `score: ${player2.getScore()}`;
+        console.log(player1, player2);
     }
 
     return { updateGrid, updatePlayers };
