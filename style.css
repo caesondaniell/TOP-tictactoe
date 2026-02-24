@@ -38,6 +38,12 @@ div {
     font-size: 8rem;
 }
 
+@media (max-width: 500px) {
+    .grid-square {
+        font-size: 100px;
+    }
+}
+
 .grid-square:hover {
     cursor: pointer;
 }
