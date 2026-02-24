@@ -1,4 +1,3 @@
-//RETURN board, players, startGame, startRound, claimSpace, checkStatus*
 const game = (() => {
     //EXTERNAL
     const board = (() => {
@@ -36,22 +35,6 @@ const game = (() => {
         players.list.push(player1, player2);
         coinFlip();
     }
-    //INTERNAL (newGame): RETURN player objects
-    function newPlayer() {
-        let turn = 0, marker, score = 0;
-        const player = prompt("What's your name?");
-        const name = player[0].toUpperCase()+player.slice(1).toLowerCase();
-        const getScore = () => score;
-        const addWin = () => { score++ };
-        return { name, marker, turn, getScore, addWin };
-    }
-    //INTERNAL (newGame): set markers on player objects
-    function setMarker(player) {
-        player.marker = prompt(`Will ${player.name} play X or O?`).toUpperCase();
-        while (player.marker !== "X" && player.marker !== "O") {
-            player.marker = prompt(`Invalid entry. Choose X or O, please.`).toUpperCase();
-        }
-    }
     //EXTERNAL: clear board and optionally switch player markers
     function startRound() {
         board.clear();
@@ -61,30 +44,12 @@ const game = (() => {
         }
         coinFlip();
     }
-    //INTERNAL (newGame, newRound): set turn order in player objects
-    function coinFlip() {
-        players.list[0].turn = 0;
-        players.list[1].turn = 0;
-        const flip = Math.floor(Math.random() * 2);
-        players.list[0].turn = flip === 0 ? 1 : 2;
-        players.list[1].turn = players.list[0].turn === 1 ? 2 : 1;
-    }
-    //INTERNAL (claim, gameStatus): RETURN current player
-    function whoseTurn() {
-        const [player1, player2] = players.list[0].turn < players.list[1].turn ?
-                                    players.list : [players.list[1], players.list[0]];
-        const oneCount = board.grid.filter(space => space === player1.marker);
-        const twoCount = board.grid.filter(space => space === player2.marker);
-        const currPlayer = oneCount.length === twoCount.length ? player1 : player2;
-        return currPlayer;
-    }
-    //EXTERNAL: place current player's marker in chosen space
+        //EXTERNAL: place current player's marker in chosen space
     function claimSpace(space) {
         const currPlayer = whoseTurn();
         if (board.grid[space] === "") {
             board.grid.splice(space, 1, currPlayer.marker);
         } else alert(`Whoopsie! That space is already claimed.`);
-        console.log(board.grid);
     };
     //EXTERNAL: check game status, RETURN outcome and display text
     function checkStatus() {
@@ -116,7 +81,7 @@ const game = (() => {
             outcome = "diagonal victory";
             winMark = board.grid[4];
         }
-        if (!board.grid.includes("")) outcome = "cat's game";
+        if (!board.grid.includes("") && !outcome) outcome = "cat's game";
         if (outcome) {
             if (outcome === "cat's game") {
                 gameText = `Game over. It's a ${outcome}!`;
@@ -134,6 +99,39 @@ const game = (() => {
         }
         return { outcome, gameText }; 
     }
+    //INTERNAL (newGame): RETURN player objects
+    function newPlayer() {
+        let turn = 0, marker, score = 0;
+        const player = prompt("What's your name?");
+        const name = player[0].toUpperCase()+player.slice(1).toLowerCase();
+        const getScore = () => score;
+        const addWin = () => { score++ };
+        return { name, marker, turn, getScore, addWin };
+    }
+    //INTERNAL (newGame): set markers on player objects
+    function setMarker(player) {
+        player.marker = prompt(`Will ${player.name} play X or O?`).toUpperCase();
+        while (player.marker !== "X" && player.marker !== "O") {
+            player.marker = prompt(`Invalid entry. Choose X or O, please.`).toUpperCase();
+        }
+    }
+    //INTERNAL (newGame, newRound): set turn order in player objects
+    function coinFlip() {
+        players.list[0].turn = 0;
+        players.list[1].turn = 0;
+        const flip = Math.floor(Math.random() * 2);
+        players.list[0].turn = flip === 0 ? 1 : 2;
+        players.list[1].turn = players.list[0].turn === 1 ? 2 : 1;
+    }
+    //INTERNAL (claim, gameStatus): RETURN current player
+    function whoseTurn() {
+        const [player1, player2] = players.list[0].turn < players.list[1].turn ?
+                                    players.list : [players.list[1], players.list[0]];
+        const oneCount = board.grid.filter(space => space === player1.marker);
+        const twoCount = board.grid.filter(space => space === player2.marker);
+        const currPlayer = oneCount.length === twoCount.length ? player1 : player2;
+        return currPlayer;
+    }
 
     return { 
         board, 
@@ -148,22 +146,43 @@ const game = (() => {
 const domControl = (() => {
     const gameText = document.querySelector(".game-text");
     const controlBtns = document.querySelectorAll(".game-control");
-    //Add functions to control buttons to start a new game or round
+    const gridSquares = document.querySelectorAll(".grid-square");
+    //Add functions to start a new game or round
     controlBtns.forEach(btn => {
         btn.addEventListener("click", () => {
+            gridSquares.forEach(square => {
+                square.toggleAttribute("disabled");
+            });
             switch (btn.classList[1]) {
                 case ("new"):
-                    controlBtns[0].toggleAttribute("hidden");
-                    controlBtns[1].toggleAttribute("hidden");
+                    controlBtns[1].toggleAttribute("hidden", false);
                     game.startGame();
-                    updatePlayers();
-                    gameText.textContent = game.checkStatus().gameText;
                     break;
                 case ("reset"):
                     game.startRound();
-                    updatePlayers();
-                    gameText.textContent = game.checkStatus().gameText;
                     break;
+            };
+            updatePlayers();
+            updateGrid();
+            gameText.textContent = game.checkStatus().gameText;
+        });
+    });
+    //Add functions to claim a space and check game status
+    gridSquares.forEach(square => {
+        square.addEventListener("click", () => {
+            const position = Number(square.dataset.position);
+            game.claimSpace(position);
+            updateGrid();
+            const status = game.checkStatus();
+            gameText.textContent = status.gameText;
+            if (status.outcome) {
+                gridSquares.forEach(square => {
+                    square.toggleAttribute("disabled");
+                });
+                updatePlayers();
+                controlBtns.forEach(btn => {
+                    btn.toggleAttribute("hidden", false);
+                });
             }
         })
     });
@@ -189,8 +208,5 @@ const domControl = (() => {
         p2Name.textContent = player2.name;
         p2Mark.textContent = `marker: ${player2.marker}`;
         p2Score.textContent = `score: ${player2.getScore()}`;
-        console.log(player1, player2);
     }
-
-    return { updateGrid, updatePlayers };
 })();
